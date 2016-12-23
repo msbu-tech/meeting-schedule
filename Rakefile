@@ -17,6 +17,13 @@ task :next do
       next if !issue[:title].start_with? "Tech 例会 "
       index = issue[:title].split(" ").at(2)
       number = issue[:number]
+      body = issue[:body]
+      cur_member = body.split("<@").at(1).split(">").at(0)
+      member_index = members.index(cur_member)
+      if member_index >= members.length - 1
+        member_index = -1
+      end
+      member = members[member_index+1]
       break
     end
     client.close_issue(repo_name, number)
@@ -24,7 +31,7 @@ task :next do
   # new issue of next week
   title = "Tech 例会 #{index+1}"
   content = <<-EOS
-本周例会主持人是 @#{member}，请提前准备会议室并收集议题。
+本周例会主持人是 <@#{member}> 请提前准备会议室并收集议题。
   EOS
   client.create_issue(repo_name, title, content)
 end
