@@ -11,11 +11,12 @@ task :next do
   issues = client.list_issues(repo_name, options = {:state => "open"})
   member = members[0]
   index = 0
+  number = 0
   # close issue of last week
   if !issues.empty?
     issues.each do |issue|
       next if !issue[:title].start_with? "Tech 例会 "
-      index = issue[:title].split(" ").at(2)
+      index = issue[:title].split(" ").at(2).to_i
       number = issue[:number]
       body = issue[:body]
       cur_member = body.split("<@").at(1).split(">").at(0)
@@ -29,7 +30,8 @@ task :next do
     client.close_issue(repo_name, number)
   end
   # new issue of next week
-  title = "Tech 例会 #{index+1}"
+  index = index + 1
+  title = "Tech 例会 #{index}"
   content = <<-EOS
 本周例会主持人是 <@#{member}> 请提前准备会议室并收集议题。
   EOS
